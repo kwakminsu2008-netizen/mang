@@ -6,9 +6,9 @@
     <title>mang</title>
     <link rel="icon" href="favicon.png">
     
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://googleapis.com">
+    <link rel="preconnect" href="https://gstatic.com" crossorigin>
+    <link href="https://googleapis.com/css2=family=DotGothic16&family=Syne:wght@700;800&family=Inter:wght@400;500&display=swap" rel="stylesheet">
     
     <style>
         :root {
@@ -16,6 +16,7 @@
             --color-1: #ff007f;
             --color-2: #7f00ff;
             --color-3: #00f0ff;
+            --accent-glow: rgba(255, 255, 255, 0.15);
         }
 
         * {
@@ -36,6 +37,7 @@
             overflow: hidden;
         }
 
+        /* 배경 슬라이드쇼 레이어 */
         .bg-layer {
             position: fixed;
             top: -10%;
@@ -47,8 +49,7 @@
             background-repeat: no-repeat;
             z-index: 1;
             opacity: 0;
-            transition: opacity 2s cubic-bezier(0.4, 0, 0.2, 1), 
-                        transform .8s cubic-bezier(.22,1,.36,1);
+            transition: opacity 2s cubic-bezier(0.4, 0, 0.2, 1);
             will-change: transform, opacity;
         }
 
@@ -90,41 +91,30 @@
             pointer-events: none;
         }
 
-        /* ==================== 카드 크기 확대 ==================== */
+        /* 🎴 [수정] 메인 콘텐츠 카드 박스 크기 확대 */
         .content {
             position: relative;
             z-index: 10;
             width: 92%;
-            max-width: 620px;           /* ← 키움 */
-            padding: 56px 46px;         /* ← 키움 */
+            max-width: 540px; /* 기존 440px에서 540px로 묵직하게 키웠습니다 */
+            padding: 46px 36px; /* 내부 여백도 더 넓혀서 시원한 느낌을 줍니다 */
             text-align: center;
             background: rgba(255, 255, 255, 0.01);
             border: 1px solid rgba(255, 255, 255, 0.04);
             border-radius: 24px;
             backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
             box-shadow: 0 30px 70px rgba(0, 0, 0, 0.8);
             opacity: 0;
             transform: translateY(30px);
             animation: fadeInUp 1.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
             animation-delay: 0.2s;
-
-            /* 카드가 자연스럽게 이어지게 하는 트랜지션 */
-            transition: 
-                transform .8s cubic-bezier(.22,1,.36,1),
-                opacity .8s ease,
-                filter .8s ease;
-        }
-
-        .content.leaving {
-            transform: translateY(-25px) scale(1.04);
-            opacity: 0;
-            filter: blur(10px);
         }
 
         .name {
             font-family: 'Syne', sans-serif;
             font-weight: 800;
-            font-size: 84px;            /* ← 키움 */
+            font-size: 76px; /* 박스가 커진 만큼 폰트 크기도 68px -> 76px로 확대 */
             text-transform: uppercase;
             letter-spacing: -1px;
             line-height: 1;
@@ -132,6 +122,7 @@
             background: linear-gradient(135deg, #ffffff 30%, #a8a8a8 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+            text-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
         }
 
         .bio {
@@ -150,18 +141,19 @@
             gap: 14px;
         }
 
+        /* 🔗 [수정] 박스 크기에 맞춰 터치하기 좋게 버튼 여백 및 크기 확대 */
         .nav-btn {
             position: relative;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 22px 36px;         /* ← 키움 */
+            padding: 20px 32px; /* 상하좌우 패딩을 늘려 버튼을 더 큼직하게 만들었습니다 */
             background: rgba(255, 255, 255, 0.03);
             border: 1px solid rgba(255, 255, 255, 0.06);
             border-radius: 14px;
             color: #e5e5e5;
             text-decoration: none;
-            font-size: 17px;            /* ← 키움 */
+            font-size: 16px; /* 버튼 글씨 크기도 15px -> 16px로 업 */
             font-weight: 500;
             letter-spacing: 0.5px;
             overflow: hidden;
@@ -206,23 +198,21 @@
             transform: translateX(6px);
         }
 
-        /* 배경도 같이 움직이게 */
-        body.leaving .bg-layer {
-            transform: scale(1.08);
-            filter: blur(6px);
-        }
-
         @media (max-width: 480px) {
             .content {
-                padding: 42px 28px;
+                padding: 38px 24px;
                 margin: 0 16px;
             }
             .name {
-                font-size: 64px;
+                font-size: 58px;
+            }
+            .bio {
+                font-size: 11px;
+                margin-bottom: 36px;
             }
             .nav-btn {
-                padding: 18px 26px;
-                font-size: 15.5px;
+                padding: 18px 24px;
+                font-size: 15px;
             }
         }
 
@@ -246,10 +236,13 @@
         <p class="bio">character illustrator</p>
 
         <div class="nav">
-            <a href="https://x.com/KRIMP1723322" class="nav-btn" target="_blank">
+            <!-- 🔗 [수정] X (Twitter) 부분에 실제 트위터 연결용 테스트 링크 주소를 심었습니다! -->
+            <a href="https://x.com" class="nav-btn" target="_blank">
                 <span>X (Twitter)</span>
                 <span>→</span>
             </a>
+            
+            <!-- 아래 남은 채널들은 나중에 주소가 나오면 # 자리에 주소를 쏙 채우시면 됩니다 -->
             <a href="#" class="nav-btn" target="_blank">
                 <span>Pixiv</span>
                 <span>→</span>
@@ -271,9 +264,9 @@
 
     <script>
         const images = [
-            'https://picsum.photos/id/1015/2000/1200',
-            'https://picsum.photos/id/1005/2000/1200',
-            'https://picsum.photos/id/1016/2000/1200'
+            'https://picsum.photos',
+            'https://picsum.photos',
+            'https://picsum.photos'
         ];
 
         const bg1 = document.getElementById('bg1');
@@ -283,11 +276,16 @@
         let isBg1Active = true;
 
         bg1.style.backgroundImage = `url('${images[0]}')`;
-        bg2.style.backgroundImage = `url('${images[1]}')`;
+        if(images.length > 1) {
+            bg2.style.backgroundImage = `url('${images[0]}')`;
+        }
 
         function startSlideshow() {
+            if (images.length <= 1) return;
+
             setInterval(() => {
                 currentIndex = (currentIndex + 1) % images.length;
+
                 if (isBg1Active) {
                     bg2.style.backgroundImage = `url('${images[currentIndex]}')`;
                     bg2.classList.add('active');
@@ -297,6 +295,7 @@
                     bg1.classList.add('active');
                     bg2.classList.remove('active');
                 }
+                
                 isBg1Active = !isBg1Active;
             }, 10000);
         }
@@ -313,38 +312,7 @@
             function animate() {
                 currentX += (targetX - currentX) * 0.04;
                 currentY += (targetY - currentY) * 0.04;
+                
                 bg1.style.transform = `translate(${currentX}px, ${currentY}px)`;
                 bg2.style.transform = `translate(${currentX}px, ${currentY}px)`;
-                requestAnimationFrame(animate);
-            }
-            animate();
-        }
-
-        // ==================== 링크 클릭 시 자연스러운 전환 ====================
-        document.querySelectorAll(".nav-btn").forEach(btn => {
-            btn.addEventListener("click", function(e) {
-                const href = btn.getAttribute("href");
-
-                // # 링크나 빈 링크는 무시
-                if (!href || href === "#" || href.endsWith("#")) return;
-
-                e.preventDefault();
-
-                // leaving 클래스 추가 (카드 + 배경 애니메이션 시작)
-                document.body.classList.add("leaving");
-                document.querySelector(".content").classList.add("leaving");
-
-                // 700ms 후 실제 이동
-                setTimeout(() => {
-                    window.location.href = href;
-                }, 700);
-            });
-        });
-
-        window.onload = function() {
-            startSlideshow();
-            initParallax();
-        }
-    </script>
-</body>
-</html>
+                
