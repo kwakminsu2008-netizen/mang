@@ -6,27 +6,26 @@
     <title>mang</title>
     <link rel="icon" href="favicon.png">
     
+    <!-- 폰트: 도트 서체(DotGothic16) 및 세련된 고딕(Inter) 로드 -->
     <link rel="preconnect" href="https://googleapis.com">
     <link rel="preconnect" href="https://gstatic.com" crossorigin>
-    <link href="https://googleapis.com/css2=family=DotGothic16&family=Syne:wght@700;800&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://googleapis.com/css2?family=DotGothic16&family=Inter:wght@400;500&display=swap" rel="stylesheet">
     
     <style>
         :root {
-            --bg-deep: #050505;
-            --color-1: #ff007f;
-            --color-2: #7f00ff;
-            --color-3: #00f0ff;
-            --accent-glow: rgba(255, 255, 255, 0.15);
+            --bg-deep: #050507;
+            --accent-neon: #00f0ff; /* 마우스 오버 시 라인 포인트 컬러 */
+            --glass-border: rgba(255, 255, 255, 0.15);
         }
 
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            font-family: 'DotGothic16', sans-serif;
         }
 
         body {
-            font-family: 'Inter', system-ui, sans-serif;
             background-color: var(--bg-deep);
             color: #ffffff;
             min-height: 100vh;
@@ -37,7 +36,49 @@
             overflow: hidden;
         }
 
-        /* 배경 슬라이드쇼 레이어 */
+        /* 🎬 [신규] 3초간 작동하는 '로딩 중...' 오프닝 화면 */
+        .loading-screen {
+            position: fixed;
+            inset: 0;
+            background: #000000;
+            z-index: 999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            pointer-events: none;
+            /* 2.6초 동안 유지 후 0.4초간 스르륵 사라짐 (총 3초) */
+            animation: fadeOutScreen 0.4s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+            animation-delay: 2.6s; 
+        }
+
+        /* 로딩 텍스트 & 점 디자인 */
+        .loading-text {
+            font-size: 24px;
+            letter-spacing: 2px;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+        }
+
+        /* 도트 점(...)들이 순차적으로 튀는 애니메이션 */
+        .dots span {
+            animation: blink 1.2s infinite both;
+        }
+        .dots span:nth-child(1) { animation-delay: 0.2s; }
+        .dots span:nth-child(2) { animation-delay: 0.4s; }
+        .dots span:nth-child(3) { animation-delay: 0.6s; }
+
+        @keyframes blink {
+            0% { opacity: 0; transform: translateY(0); }
+            50% { opacity: 1; transform: translateY(-4px); } /* 점이 살짝 위로 튕김 */
+            100% { opacity: 0; transform: translateY(0); }
+        }
+
+        @keyframes fadeOutScreen {
+            to { opacity: 0; visibility: hidden; }
+        }
+
+        /* 🖼 * 배경: 서서히 확대 + 앵글 무빙 (Ken Burns) */
         .bg-layer {
             position: fixed;
             top: -10%;
@@ -49,7 +90,7 @@
             background-repeat: no-repeat;
             z-index: 1;
             opacity: 0;
-            transition: opacity 2s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: opacity 2s ease-in-out;
             will-change: transform, opacity;
         }
 
@@ -58,261 +99,229 @@
         }
 
         .bg-animate {
-            animation: kenBurns 40s ease-in-out infinite alternate;
+            animation: kenBurns 45s ease-in-out infinite alternate;
         }
 
         @keyframes kenBurns {
             0% { transform: scale(1.02) translate(0%, 0%) rotate(0deg); }
-            100% { transform: scale(1.12) translate(-2%, -1%) rotate(0.5deg); }
+            100% { transform: scale(1.15) translate(-2.5%, -1.5%) rotate(0.3deg); }
         }
 
+        /* 🕶️ 오버레이: 부드럽고 어두운 보랏빛 필터 */
         .bg-overlay {
             position: fixed;
             inset: 0;
             background: linear-gradient(
                 135deg,
-                rgba(5, 5, 5, 0.5) 0%,
-                rgba(10, 5, 15, 0.7) 50%,
-                rgba(5, 5, 5, 0.9) 100%
+                rgba(5, 5, 8, 0.55) 0%,
+                rgba(12, 6, 20, 0.75) 50%,
+                rgba(5, 5, 8, 0.88) 100%
             );
             z-index: 3;
             pointer-events: none;
         }
 
-        .bg-glow {
-            position: fixed;
-            width: 600px;
-            height: 600px;
-            background: radial-gradient(circle, rgba(127, 0, 255, 0.08) 0%, rgba(0, 0, 0, 0) 70%);
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 2;
-            pointer-events: none;
-        }
-
-        /* 🎴 [수정] 메인 콘텐츠 카드 박스 크기 확대 */
-        .content {
+        /* 🎴 메인 반응형 레이아웃 전체 컨테이너 */
+        .master-container {
             position: relative;
             z-index: 10;
             width: 92%;
-            max-width: 540px; /* 기존 440px에서 540px로 묵직하게 키웠습니다 */
-            padding: 46px 36px; /* 내부 여백도 더 넓혀서 시원한 느낌을 줍니다 */
-            text-align: center;
+            max-width: 900px;
+            display: flex;
+            gap: 40px;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* 📦 왼쪽: 바이오(소개) 프로필 박스 */
+        .bio-panel {
+            flex: 1;
+            max-width: 380px;
             background: rgba(255, 255, 255, 0.01);
-            border: 1px solid rgba(255, 255, 255, 0.04);
-            border-radius: 24px;
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            box-shadow: 0 30px 70px rgba(0, 0, 0, 0.8);
+            border: 1px solid var(--glass-border);
+            padding: 45px 35px;
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            text-align: left;
+            box-shadow: 0 40px 80px rgba(0, 0, 0, 0.6);
+            
+            /* 로딩창이 걷히는 2.8초 시점에 부드럽게 등장 */
             opacity: 0;
             transform: translateY(30px);
-            animation: fadeInUp 1.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-            animation-delay: 0.2s;
+            animation: panelFadeIn 1.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            animation-delay: 2.7s; 
         }
 
-        .name {
-            font-family: 'Syne', sans-serif;
-            font-weight: 800;
-            font-size: 76px; /* 박스가 커진 만큼 폰트 크기도 68px -> 76px로 확대 */
-            text-transform: uppercase;
-            letter-spacing: -1px;
-            line-height: 1;
-            margin-bottom: 16px;
-            background: linear-gradient(135deg, #ffffff 30%, #a8a8a8 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        @keyframes panelFadeIn {
+            to { opacity: 1; transform: translateY(0); }
         }
 
-        .bio {
-            font-family: 'Inter', sans-serif;
-            font-size: 13px;
-            font-weight: 500;
-            color: #888888;
-            margin-bottom: 48px;
-            text-transform: uppercase;
+        .bio-title {
+            font-size: 34px;
             letter-spacing: 2px;
+            margin-bottom: 24px;
+            color: #ffffff;
+            line-height: 1.2;
         }
 
-        .nav {
+        .bio-text {
+            font-size: 14px;
+            color: #9c9c9c;
+            line-height: 1.8;
+            letter-spacing: 0.5px;
+        }
+
+        /* 📦 오른쪽: 계단식 메뉴 리스트 */
+        .menu-panel {
             display: flex;
             flex-direction: column;
-            gap: 14px;
+            gap: 16px;
+            width: 100%;
+            max-width: 440px;
         }
 
-        /* 🔗 [수정] 박스 크기에 맞춰 터치하기 좋게 버튼 여백 및 크기 확대 */
-        .nav-btn {
+        /* 🔗 계단식 링크 카드 유닛 */
+        .menu-card {
             position: relative;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 20px 32px; /* 상하좌우 패딩을 늘려 버튼을 더 큼직하게 만들었습니다 */
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            border-radius: 14px;
-            color: #e5e5e5;
+            padding: 22px 30px;
+            background: rgba(255, 255, 255, 0.02);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            color: #cdcdcd;
             text-decoration: none;
-            font-size: 16px; /* 버튼 글씨 크기도 15px -> 16px로 업 */
-            font-weight: 500;
-            letter-spacing: 0.5px;
-            overflow: hidden;
+            font-size: 15px;
+            letter-spacing: 1px;
             transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            overflow: hidden;
+            
+            /* 순차적으로 등장하는 스태거 애니메이션 */
+            opacity: 0;
+            transform: translateY(20px);
+            animation: cardFadeIn 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
 
-        .nav-btn::before {
+        @keyframes cardFadeIn {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* 🕒 로딩 이후 순차적으로 켜지는 스태거 타임라인 설정 */
+        .menu-card:nth-child(1) { animation-delay: 2.9s; width: 85%; align-self: flex-start; }
+        .menu-card:nth-child(2) { animation-delay: 3.1s; width: 88%; align-self: flex-start; }
+        .menu-card:nth-child(3) { animation-delay: 3.3s; width: 92%; align-self: flex-start; }
+        .menu-card:nth-child(4) { animation-delay: 3.5s; width: 96%; align-self: flex-start; }
+        .menu-card:nth-child(5) { animation-delay: 3.7s; width: 100%; align-self: flex-start; }
+
+        /* 하단 언더라인 베이스 선 연출 */
+        .menu-card::after {
             content: '';
             position: absolute;
-            inset: 0;
-            background: linear-gradient(90deg, var(--color-1), var(--color-2), var(--color-3));
-            opacity: 0;
-            z-index: -1;
-            transition: opacity 0.4s ease;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 1px;
+            background: var(--accent-neon);
+            transition: width 0.4s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        .nav-btn:hover {
+        /* 💡 마우스 오버 시 상위호환 액션 */
+        .menu-card:hover {
             color: #ffffff;
-            border-color: transparent;
-            transform: translateY(-3px) scale(1.01);
-            box-shadow: 0 12px 28px rgba(127, 0, 255, 0.25);
+            background: rgba(255, 255, 255, 0.05);
+            transform: translateX(12px);
+            text-shadow: 0 0 8px rgba(255, 255, 255, 0.5);
         }
 
-        .nav-btn:hover::before {
-            opacity: 0.15;
+        .menu-card:hover::after {
+            width: 100%;
         }
 
-        .nav-btn:active {
-            transform: translateY(-1px) scale(0.99);
-        }
-
-        .nav-btn span:last-child {
-            font-family: 'Inter', sans-serif;
-            font-size: 16px;
-            opacity: 0.4;
+        /* 화살표 아이콘 */
+        .menu-card span:last-child {
+            font-size: 13px;
+            opacity: 0.3;
             transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        .nav-btn:hover span:last-child {
+        .menu-card:hover span:last-child {
             opacity: 1;
-            color: var(--color-3);
-            transform: translateX(6px);
+            color: var(--accent-neon);
+            transform: translateX(4px);
         }
 
-        @media (max-width: 480px) {
-            .content {
-                padding: 38px 24px;
-                margin: 0 16px;
+        /* 📱 모바일 대응 가로폭 조절 */
+        @media (max-width: 800px) {
+            .master-container {
+                flex-direction: column;
+                gap: 30px;
+                padding-top: 40px;
             }
-            .name {
-                font-size: 58px;
+            .bio-panel {
+                max-width: 100%;
+                width: 100%;
             }
-            .bio {
-                font-size: 11px;
-                margin-bottom: 36px;
+            .menu-panel {
+                max-width: 100%;
             }
-            .nav-btn {
-                padding: 18px 24px;
-                font-size: 15px;
-            }
-        }
-
-        @keyframes fadeInUp {
-            to {
-                opacity: 1;
-                transform: translateY(0);
+            .menu-card {
+                width: 100% !important;
             }
         }
     </style>
 </head>
 <body>
 
-    <div class="bg-layer bg-animate active" id="bg1"></div>
-    <div class="bg-layer bg-animate" id="bg2"></div>
-    <div class="bg-overlay"></div>
-    <div class="bg-glow"></div>
-
-    <div class="content">
-        <h1 class="name">mang</h1>
-        <p class="bio">character illustrator</p>
-
-        <div class="nav">
-            <!-- 🔗 [수정] X (Twitter) 부분에 실제 트위터 연결용 테스트 링크 주소를 심었습니다! -->
-            <a href="https://x.com/KRIMP1723322" class="nav-btn" target="_blank">
-                <span>X (Twitter)</span>
-                <span>→</span>
-            </a>
-            
-            <!-- 아래 남은 채널들은 나중에 주소가 나오면 # 자리에 주소를 쏙 채우시면 됩니다 -->
-            <a href="#" class="nav-btn" target="_blank">
-                <span>Pixiv</span>
-                <span>→</span>
-            </a>
-            <a href="#" class="nav-btn" target="_blank">
-                <span>Commission</span>
-                <span>→</span>
-            </a>
-            <a href="#" class="nav-btn" target="_blank">
-                <span>YouTube</span>
-                <span>→</span>
-            </a>
-            <a href="#" class="nav-btn" target="_blank">
-                <span>Instagram</span>
-                <span>→</span>
-            </a>
+    <!-- 🎬 [신규] loading... 점점점 오프닝 스크린막 -->
+    <div class="loading-screen">
+        <div class="loading-text">
+            loading<span class="dots"><span>.</span><span>.</span><span>.</span></span>
         </div>
     </div>
 
-    <script>
-        const images = [
-            'https://picsum.photos',
-            'https://picsum.photos',
-            'https://picsum.photos'
-        ];
+    <!-- 🖼️ 영화 같은 디졸브 배경 레이어 -->
+    <div class="bg-layer bg-animate active" id="bg1"></div>
+    <div class="bg-layer bg-animate" id="bg2"></div>
+    <div class="bg-overlay"></div>
 
-        const bg1 = document.getElementById('bg1');
-        const bg2 = document.getElementById('bg2');
+    <!-- 🎴 전체 레이아웃 바디 -->
+    <div class="master-container">
         
-        let currentIndex = 0;
-        let isBg1Active = true;
+        <!-- 왼쪽 소개 박스 -->
+        <div class="bio-panel">
+            <h1 class="bio-title">MANG</h1>
+            <p class="bio-text">
+                hihi<br>
+                i might be a<br>
+                character illustrator &amp;<br>
+                concept designer.
+            </p>
+        </div>
 
-        bg1.style.backgroundImage = `url('${images[0]}')`;
-        if(images.length > 1) {
-            bg2.style.backgroundImage = `url('${images[0]}')`;
-        }
+        <!-- 오른쪽 계단식 카드 메뉴 그룹 -->
+        <div class="menu-panel">
+            <a href="https://x.com/KRIMP1723322" class="menu-card" target="_blank">
+                <span>X (트위터)</span>
+                <span>→</span>
+            </a>
+            <a href="#" class="menu-card" target="_blank">
+                <span>픽시브 (Pixiv)</span>
+                <span>→</span>
+            </a>
+            <a href="#" class="menu-card" target="_blank">
+                <span>커미션 (Commission)</span>
+                <span>→</span>
+            </a>
+            <a href="#" class="menu-card" target="_blank">
+                <span>유튜브 (YouTube)</span>
+                <span>→</span>
+            </a>
+            <a href="#" class="menu-card" target="_blank">
+                <span>인스타그램 (Instagram)</span>
+                <span>→</span>
+            </a>
+        </div>
 
-        function startSlideshow() {
-            if (images.length <= 1) return;
+    </div>
 
-            setInterval(() => {
-                currentIndex = (currentIndex + 1) % images.length;
-
-                if (isBg1Active) {
-                    bg2.style.backgroundImage = `url('${images[currentIndex]}')`;
-                    bg2.classList.add('active');
-                    bg1.classList.remove('active');
-                } else {
-                    bg1.style.backgroundImage = `url('${images[currentIndex]}')`;
-                    bg1.classList.add('active');
-                    bg2.classList.remove('active');
-                }
-                
-                isBg1Active = !isBg1Active;
-            }, 10000);
-        }
-
-        function initParallax() {
-            let targetX = 0, targetY = 0;
-            let currentX = 0, currentY = 0;
-
-            document.addEventListener('mousemove', (e) => {
-                targetX = (e.clientX / window.innerWidth - 0.5) * 30;
-                targetY = (e.clientY / window.innerHeight - 0.5) * 30;
-            });
-
-            function animate() {
-                currentX += (targetX - currentX) * 0.04;
-                currentY += (targetY - currentY) * 0.04;
-                
-                bg1.style.transform = `translate(${currentX}px, ${currentY}px)`;
-                bg2.style.transform = `translate(${currentX}px, ${currentY}px)`;
-                
+    <script>
