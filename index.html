@@ -4,17 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>mang</title>
-    <link rel="icon" href="favicon.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Inter:wght@400;500&display=swap" rel="stylesheet">
-    
     <style>
         :root {
-            --bg-deep: #050505;
-            --accent-pink: #ff007f;
-            --accent-purple: #7f00ff;
-            --accent-cyan: #00f0ff;
+            --accent: #ffffff;
         }
 
         * {
@@ -24,9 +19,9 @@
         }
 
         body {
-            font-family: 'Inter', system-ui, sans-serif;
-            background-color: var(--bg-deep);
-            color: #ffffff;
+            background: #050505;
+            color: #fff;
+            font-family: 'Inter', sans-serif;
             min-height: 100vh;
             display: flex;
             align-items: center;
@@ -34,323 +29,223 @@
             overflow: hidden;
         }
 
-        /* ==================== 업그레이드된 기하학 인트로 ==================== */
-        .geometric-intro {
+        .bg-layer {
             position: fixed;
             inset: 0;
-            z-index: 200;
-            background: #050505;
-            pointer-events: none;
+            background-size: cover;
+            background-position: center;
+            z-index: 1;
+            opacity: 0;
+            transition: opacity 2.5s ease;
         }
+        .bg-layer.active { opacity: 1; }
 
-        .geo-container {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 420px;
-            height: 420px;
-        }
-
-        .geo-shape {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform-origin: center;
-            will-change: transform, opacity;
-        }
-
-        /* 사각형 */
-        .square {
-            width: 140px;
-            height: 140px;
-            border: 2.5px solid var(--accent-purple);
-            animation: geoMove 4.2s cubic-bezier(0.23, 1, 0.32, 1) forwards;
-        }
-        .square:nth-child(1) { transform: translate(-50%, -50%) rotate(12deg); animation-delay: 0s; }
-        .square:nth-child(2) { width: 200px; height: 200px; border-color: var(--accent-pink); transform: translate(-50%, -50%) rotate(-18deg); animation-delay: 0.25s; }
-        .square:nth-child(3) { width: 95px; height: 95px; border-color: var(--accent-cyan); transform: translate(-50%, -50%) rotate(48deg); animation-delay: 0.55s; }
-
-        /* 삼각형 */
-        .triangle {
-            width: 0;
-            height: 0;
-            border-left: 85px solid transparent;
-            border-right: 85px solid transparent;
-            border-bottom: 145px solid var(--accent-pink);
-            animation: geoMove 4.2s cubic-bezier(0.23, 1, 0.32, 1) forwards;
-        }
-        .triangle:nth-child(4) { transform: translate(-50%, -50%) rotate(25deg); animation-delay: 0.8s; }
-        .triangle:nth-child(5) { border-bottom-color: var(--accent-purple); transform: translate(-50%, -50%) rotate(-52deg); animation-delay: 1.1s; }
-
-        /* 얇은 선 */
-        .line {
-            width: 320px;
-            height: 1.5px;
-            background: linear-gradient(to right, transparent, var(--accent-cyan), transparent);
-            animation: geoMove 4.2s cubic-bezier(0.23, 1, 0.32, 1) forwards;
-        }
-        .line:nth-child(6) { transform: translate(-50%, -50%) rotate(22deg); animation-delay: 0.4s; }
-        .line:nth-child(7) { width: 260px; transform: translate(-50%, -50%) rotate(-35deg); animation-delay: 1.35s; }
-
-        @keyframes geoMove {
-            0% {
-                transform: translate(-50%, -50%) scale(0.2) rotate(var(--rot, 0deg));
-                opacity: 0;
-            }
-            18% {
-                opacity: 0.95;
-            }
-            65% {
-                transform: translate(-50%, -50%) scale(1.08) rotate(var(--rot, 0deg));
-            }
-            100% {
-                transform: translate(-50%, -50%) scale(1.35) rotate(var(--rot, 0deg));
-                opacity: 0;
-            }
-        }
-
-        .geometric-intro {
-            animation: introOut 0.7s ease forwards;
-            animation-delay: 3.5s;
-        }
-
-        @keyframes introOut {
-            to { opacity: 0; }
-        }
-
-        /* ==================== 메인 콘텐츠 ==================== */
         .content {
             position: relative;
             z-index: 10;
             width: 92%;
-            max-width: 560px;
-            padding: 52px 42px;
-            text-align: center;
-            background: rgba(255, 255, 255, 0.012);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 28px;
-            backdrop-filter: blur(24px);
-            box-shadow: 0 35px 80px rgba(0, 0, 0, 0.85);
+            max-width: 620px;           /* 박스 더 크게 */
+            padding: 60px 55px;
+            border: 1.5px solid rgba(255,255,255,0.25);
+            border-radius: 8px;
+            background: rgba(5,5,5,0.65);
+            backdrop-filter: blur(20px);
             opacity: 0;
-            transform: translateY(50px) scale(0.96);
-            animation: contentIn 1.4s cubic-bezier(0.23, 1, 0.32, 1) forwards;
-            animation-delay: 3.65s;
+            transform: translateY(40px);
+            animation: contentEnter 1.8s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+            animation-delay: 3.8s;
         }
 
         .name {
             font-family: 'Syne', sans-serif;
+            font-size: 72px;
             font-weight: 800;
-            font-size: 82px;
-            letter-spacing: -2.5px;
-            line-height: 0.92;
-            margin-bottom: 14px;
-            background: linear-gradient(135deg, #ffffff 25%, #c8c8c8 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            letter-spacing: -2px;
+            margin-bottom: 8px;
         }
 
         .bio {
-            font-size: 13px;
-            font-weight: 500;
-            color: #777777;
-            letter-spacing: 3.5px;
-            text-transform: uppercase;
-            margin-bottom: 52px;
+            font-size: 15px;
+            color: #aaa;
+            margin-bottom: 45px;
+            letter-spacing: 1px;
         }
 
+        /* ==================== 레퍼런스 스타일 네비게이션 ==================== */
         .nav {
             display: flex;
             flex-direction: column;
-            position: relative;
             gap: 0;
+            position: relative;
         }
 
-        .nav-btn {
+        .nav-item {
             position: relative;
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            padding: 21px 34px;
-            background: rgba(255, 255, 255, 0.028);
-            border: 1px solid rgba(255, 255, 255, 0.07);
-            border-radius: 16px;
-            color: #e8e8e8;
+            padding: 14px 0;
+            color: #ddd;
             text-decoration: none;
-            font-size: 16.5px;
-            font-weight: 500;
-            letter-spacing: 0.6px;
-            overflow: hidden;
-            z-index: 1;
-            margin-bottom: -28px;
-            opacity: 0;
-            transform: translateY(30px);
-            transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
-            animation: btnIn 0.8s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+            font-size: 15.5px;
+            transition: color 0.3s ease;
         }
 
-        .nav-btn:not(:last-child) {
-            margin-bottom: -28px;
+        .nav-item:hover {
+            color: #fff;
         }
 
-        .nav-btn:nth-child(1) { animation-delay: 4.4s; }
-        .nav-btn:nth-child(2) { animation-delay: 4.55s; }
-        .nav-btn:nth-child(3) { animation-delay: 4.7s; }
-        .nav-btn:nth-child(4) { animation-delay: 4.85s; }
-        .nav-btn:nth-child(5) { animation-delay: 5.0s; }
-
-        .nav-btn:hover {
-            color: #ffffff;
-            border-color: transparent;
-            transform: translateY(-12px) scale(1.015);
-            box-shadow: 0 25px 55px rgba(127, 0, 255, 0.3);
-            z-index: 10;
+        /* 얇은 연결선 (레퍼런스 스타일) */
+        .nav-item::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            width: 100%;
+            height: 1px;
+            background: rgba(255,255,255,0.25);
         }
 
-        .nav-btn span:last-child {
-            opacity: 0.35;
-            transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+        .nav-item:last-child::after {
+            display: none;
         }
 
-        .nav-btn:hover span:last-child {
-            opacity: 1;
-            color: var(--accent-cyan);
-            transform: translateX(10px);
+        .nav-item span {
+            position: relative;
+            z-index: 2;
+            background: #050505;
+            padding-right: 12px;
         }
 
-        @keyframes contentIn {
-            to {
-                opacity: 1;
-                transform: translateY(0) scale(1);
-            }
+        /* 소셜 아이콘 부분 (수직 연결) */
+        .socials {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            margin: 35px 0 50px;
+            position: relative;
         }
 
-        @keyframes btnIn {
+        .socials::before {
+            content: '';
+            position: absolute;
+            left: 18px;
+            top: 8px;
+            bottom: 8px;
+            width: 1px;
+            background: rgba(255,255,255,0.25);
+        }
+
+        .social-link {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            color: #ddd;
+            text-decoration: none;
+            font-size: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .social-link:hover {
+            color: #fff;
+            transform: translateX(4px);
+        }
+
+        .social-link span {
+            width: 22px;
+            text-align: center;
+        }
+
+        /* ==================== 애니메이션 ==================== */
+        @keyframes contentEnter {
             to {
                 opacity: 1;
                 transform: translateY(0);
             }
         }
 
-        @media (max-width: 480px) {
-            .content {
-                padding: 42px 28px;
-            }
-            .name {
-                font-size: 62px;
-            }
+        .nav-item {
+            opacity: 0;
+            transform: translateY(20px);
+            animation: navItemEnter 1s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+        }
+
+        .nav-item:nth-child(1) { animation-delay: 4.3s; }
+        .nav-item:nth-child(2) { animation-delay: 4.5s; }
+        .nav-item:nth-child(3) { animation-delay: 4.7s; }
+        .nav-item:nth-child(4) { animation-delay: 4.9s; }
+        .nav-item:nth-child(5) { animation-delay: 5.1s; }
+
+        .social-link {
+            opacity: 0;
+            transform: translateX(-15px);
+            animation: socialEnter 0.9s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+        }
+
+        .social-link:nth-child(1) { animation-delay: 4.4s; }
+        .social-link:nth-child(2) { animation-delay: 4.55s; }
+        .social-link:nth-child(3) { animation-delay: 4.7s; }
+        .social-link:nth-child(4) { animation-delay: 4.85s; }
+        .social-link:nth-child(5) { animation-delay: 5.0s; }
+
+        @keyframes navItemEnter {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes socialEnter {
+            to { opacity: 1; transform: translateX(0); }
         }
     </style>
 </head>
 <body>
 
-    <!-- 기하학적 인트로 -->
-    <div class="geometric-intro">
-        <div class="geo-container">
-            <!-- 사각형 -->
-            <div class="geo-shape square" style="--rot: 12deg;"></div>
-            <div class="geo-shape square" style="--rot: -18deg;"></div>
-            <div class="geo-shape square" style="--rot: 48deg;"></div>
-
-            <!-- 삼각형 -->
-            <div class="geo-shape triangle" style="--rot: 25deg;"></div>
-            <div class="geo-shape triangle" style="--rot: -52deg;"></div>
-
-            <!-- 선 -->
-            <div class="geo-shape line" style="--rot: 22deg;"></div>
-            <div class="geo-shape line" style="--rot: -35deg;"></div>
-        </div>
-    </div>
-
     <!-- 배경 -->
-    <div class="bg-layer bg-animate active" id="bg1"></div>
-    <div class="bg-layer bg-animate" id="bg2"></div>
-    <div class="bg-overlay"></div>
-    <div class="bg-glow"></div>
+    <div class="bg-layer active" id="bg1" style="background-image: url('https://picsum.photos/id/1015/2000/1200');"></div>
 
     <!-- 메인 콘텐츠 -->
     <div class="content">
         <h1 class="name">mang</h1>
         <p class="bio">character illustrator</p>
 
-        <div class="nav">
-            <a href="https://x.com/KRIMP1723322" class="nav-btn" target="_blank">
-                <span>X (Twitter)</span>
-                <span>→</span>
+        <!-- 소셜 (레퍼런스처럼 수직 선 연결) -->
+        <div class="socials">
+            <a href="https://x.com/KRIMP1723322" class="social-link" target="_blank">
+                <span>X</span>
             </a>
-            <a href="#" class="nav-btn" target="_blank">
+            <a href="#" class="social-link" target="_blank">
                 <span>Pixiv</span>
-                <span>→</span>
             </a>
-            <a href="#" class="nav-btn" target="_blank">
-                <span>Commission</span>
-                <span>→</span>
-            </a>
-            <a href="#" class="nav-btn" target="_blank">
-                <span>YouTube</span>
-                <span>→</span>
-            </a>
-            <a href="#" class="nav-btn" target="_blank">
+            <a href="#" class="social-link" target="_blank">
                 <span>Instagram</span>
-                <span>→</span>
             </a>
+            <a href="#" class="social-link" target="_blank">
+                <span>Discord</span>
+            </a>
+            <a href="#" class="social-link" target="_blank">
+                <span>Email</span>
+            </a>
+        </div>
+
+        <!-- 메뉴 (레퍼런스처럼 선으로 연결) -->
+        <div class="nav">
+            <a href="#" class="nav-item"><span>know about me</span></a>
+            <a href="#" class="nav-item"><span>commissions</span></a>
+            <a href="#" class="nav-item"><span>humble blog</span></a>
+            <a href="#" class="nav-item"><span>art gallery</span></a>
+            <a href="#" class="nav-item"><span>neat stuff</span></a>
         </div>
     </div>
 
     <script>
-        // 배경 슬라이드쇼 + 패럴랙스 (기존과 동일하게 유지)
-        const images = [
-            'https://picsum.photos/id/1015/2000/1200',
-            'https://picsum.photos/id/1005/2000/1200',
-            'https://picsum.photos/id/1016/2000/1200'
-        ];
-
+        // 배경 슬라이드쇼 (부드럽게)
         const bg1 = document.getElementById('bg1');
-        const bg2 = document.getElementById('bg2');
-        let currentIndex = 0;
-        let isBg1Active = true;
-
-        bg1.style.backgroundImage = `url('${images[0]}')`;
-        bg2.style.backgroundImage = `url('${images[1]}')`;
-
-        function startSlideshow() {
-            setInterval(() => {
-                currentIndex = (currentIndex + 1) % images.length;
-                if (isBg1Active) {
-                    bg2.style.backgroundImage = `url('${images[currentIndex]}')`;
-                    bg2.classList.add('active');
-                    bg1.classList.remove('active');
-                } else {
-                    bg1.style.backgroundImage = `url('${images[currentIndex]}')`;
-                    bg1.classList.add('active');
-                    bg2.classList.remove('active');
-                }
-                isBg1Active = !isBg1Active;
-            }, 10000);
-        }
-
-        function initParallax() {
-            let targetX = 0, targetY = 0, currentX = 0, currentY = 0;
-
-            document.addEventListener('mousemove', (e) => {
-                targetX = (e.clientX / window.innerWidth - 0.5) * 28;
-                targetY = (e.clientY / window.innerHeight - 0.5) * 28;
-            });
-
-            function animate() {
-                currentX += (targetX - currentX) * 0.035;
-                currentY += (targetY - currentY) * 0.035;
-                bg1.style.transform = `translate(${currentX}px, ${currentY}px)`;
-                bg2.style.transform = `translate(${currentX}px, ${currentY}px)`;
-                requestAnimationFrame(animate);
-            }
-            animate();
-        }
-
-        window.onload = () => {
-            startSlideshow();
-            initParallax();
-        }
+        setInterval(() => {
+            bg1.style.transition = 'opacity 2.5s ease';
+            bg1.style.opacity = '0';
+            setTimeout(() => {
+                bg1.style.backgroundImage = `url('https://picsum.photos/id/${Math.floor(Math.random()*20)+1005}/2000/1200')`;
+                bg1.style.opacity = '1';
+            }, 2500);
+        }, 12000);
     </script>
 </body>
 </html>
