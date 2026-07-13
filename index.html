@@ -3,18 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- 1. 브라우저 탭 제목 변경 -->
     <title>mang</title>
-    
-    <!-- Favicon (나중에 본인 favicon으로 교체) -->
     <link rel="icon" href="favicon.png">
     
-    <link href="https://googleapis.com" rel="stylesheet">
+    <!-- 폰트 업그레이드: 세련된 영문 폰트(Syne)와 도트 폰트(DotGothic16) 동시 로드 -->
+    <link rel="preconnect" href="https://googleapis.com">
+    <link rel="preconnect" href="https://gstatic.com" crossorigin>
+    <link href="https://googleapis.com/css2?family=DotGothic16&family=Syne:wght@700;800&family=Inter:wght@400;500&display=swap" rel="stylesheet">
     
     <style>
         :root {
-            --bg-deep: #080808;
-            --accent-glow: rgba(255, 255, 255, 0.15);
+            --bg-deep: #050505;
+            /* 사이버펑크/디지털 일러스트 감성의 포인트 그라데이션 색상 */
+            --color-1: #ff007f;
+            --color-2: #7f00ff;
+            --color-3: #00f0ff;
         }
 
         * {
@@ -26,7 +29,7 @@
         body {
             font-family: 'Inter', system-ui, sans-serif;
             background-color: var(--bg-deep);
-            color: #f5f5f5;
+            color: #ffffff;
             min-height: 100vh;
             display: flex;
             align-items: center;
@@ -35,19 +38,19 @@
             overflow: hidden;
         }
 
-        /* 🖼️ 배경 슬라이드쇼 컨테이너 (두 장을 겹쳐서 디졸브 구현) */
+        /* 🖼️ 배경 슬라이드쇼 레이어 (더블 버퍼링) */
         .bg-layer {
             position: fixed;
-            top: -5%;
-            left: -5%;
-            width: 110%;
-            height: 110%;
+            top: -10%;
+            left: -10%;
+            width: 120%;
+            height: 120%;
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
             z-index: 1;
             opacity: 0;
-            transition: opacity 1.8s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: opacity 2s cubic-bezier(0.4, 0, 0.2, 1);
             will-change: transform, opacity;
         }
 
@@ -55,125 +58,172 @@
             opacity: 1;
         }
 
-        /* 🪐 켄번즈(서서히 확대+무빙) 애니메이션 분리 적용 */
+        /* 🪐 켄번즈 애니메이션 고도화 */
         .bg-animate {
-            animation: kenBurns 35s ease-in-out infinite alternate;
+            animation: kenBurns 40s ease-in-out infinite alternate;
         }
 
         @keyframes kenBurns {
-            0% { transform: scale(1.02) translate(0%, 0%); }
-            100% { transform: scale(1.08) translate(-1.5%, -1%); }
+            0% { transform: scale(1.02) translate(0%, 0%) rotate(0deg); }
+            100% { transform: scale(1.12) translate(-2%, -1%) rotate(0.5deg); }
         }
 
-        /* 배경 어둡기 필터 그라데이션 */
+        /* 더 트렌디하고 딥한 네온 오버레이 그라데이션 */
         .bg-overlay {
             position: fixed;
             inset: 0;
             background: linear-gradient(
-                to bottom,
-                rgba(8, 8, 8, 0.4) 0%,
-                rgba(8, 8, 8, 0.55) 50%,
-                rgba(8, 8, 8, 0.82) 100%
+                135deg,
+                rgba(5, 5, 5, 0.5) 0%,
+                rgba(10, 5, 15, 0.7) 50%,
+                rgba(5, 5, 5, 0.9) 100
             );
             z-index: 3;
             pointer-events: none;
         }
 
-        /* 메인 콘텐츠 */
+        /* 💡 몽환적인 배경 네온 광채 스팟 추가 */
+        .bg-glow {
+            position: fixed;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(127, 0, 255, 0.08) 0%, rgba(0, 0, 0, 0) 70%);
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        /* 메인 콘텐츠 카드 */
         .content {
             position: relative;
             z-index: 10;
             width: 100%;
-            max-width: 460px;
-            padding: 0 24px;
+            max-width: 440px;
+            padding: 40px 28px;
             text-align: center;
+            background: rgba(255, 255, 255, 0.01);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            border-radius: 24px;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            box-shadow: 0 30px 70px rgba(0, 0, 0, 0.8);
             opacity: 0;
             transform: translateY(30px);
-            animation: fadeInUp 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-            animation-delay: 0.3s;
+            animation: fadeInUp 1.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            animation-delay: 0.2s;
         }
 
-        /* 영문 mang 텍스트에 맞춘 서체 디자인 최적화 */
+        /* 🔥 타이포그래피 예술처럼 바꾼 폰트 디자인 (Syne 폰트) */
         .name {
-            font-family: 'DotGothic16', sans-serif;
-            font-size: 58px; /* 가독성을 위해 살짝 키움 */
-            letter-spacing: 5px; /* 영문에 맞게 자간 조절 */
-            margin-bottom: 12px;
-            color: #ffffff;
-            text-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
+            font-family: 'Syne', sans-serif;
+            font-weight: 800;
+            font-size: 68px; 
+            text-transform: uppercase;
+            letter-spacing: -1px;
+            line-height: 1;
+            margin-bottom: 14px;
+            background: linear-gradient(135deg, #ffffff 30%, #a8a8a8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
         }
 
         .bio {
-            font-size: 15px;
-            color: #a8a8a8;
-            margin-bottom: 52px;
-            letter-spacing: 0.4px;
+            font-family: 'Inter', sans-serif;
+            font-size: 13px;
+            font-weight: 500;
+            color: #888888;
+            margin-bottom: 44px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
         }
 
-        /* 버튼 */
+        /* 버튼 그룹 */
         .nav {
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 14px;
         }
 
+        /* ✨ 상위호환 그라데이션 보더 버튼 디자인 */
         .nav-btn {
+            position: relative;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 17px 26px;
+            padding: 18px 28px;
             background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 9999px;
-            color: #f5f5f5;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 14px; /* 라운드를 살짝 줄여 더 세련되게 변경 */
+            color: #e5e5e5;
             text-decoration: none;
             font-size: 15px;
             font-weight: 500;
             letter-spacing: 0.5px;
-            transition: 
-                background 0.3s cubic-bezier(0.25, 1, 0.5, 1),
-                border-color 0.3s cubic-bezier(0.25, 1, 0.5, 1),
-                transform 0.3s cubic-bezier(0.25, 1, 0.5, 1),
-                box-shadow 0.3s cubic-bezier(0.25, 1, 0.5, 1);
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        /* 마우스 오버 효과 */
+        /* 버튼 내부에 흐르는 컬러 그라데이션 선 연출 */
+        .nav-btn::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(90deg, var(--color-1), var(--color-2), var(--color-3));
+            opacity: 0;
+            z-index: -1;
+            transition: opacity 0.4s ease;
+        }
+
+        /* 💡 마우스 오버(Hover) 시 상위호환 네온 발광 연출 */
         .nav-btn:hover {
-            background: rgba(255, 255, 255, 0.08);
-            border-color: rgba(255, 255, 255, 0.2);
-            transform: translateY(-2px);
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3), 0 0 12px var(--accent-glow);
             color: #ffffff;
+            border-color: transparent;
+            transform: translateY(-3px) scale(1.01);
+            box-shadow: 0 12px 28px rgba(127, 0, 255, 0.25);
+        }
+
+        .nav-btn:hover::before {
+            opacity: 0.15; /* 마우스 올리면 버튼 내부에 은은한 그라데이션 불빛 활성화 */
         }
 
         .nav-btn:active {
-            transform: scale(0.985);
+            transform: translateY(-1px) scale(0.99);
         }
 
-        /* 화살표 애니메이션 */
+        /* 화살표 아이콘 디자인 */
         .nav-btn span:last-child {
-            transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+            font-family: 'Inter', sans-serif;
+            font-size: 16px;
+            opacity: 0.4;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
+        /* 마우스 오버 시 화살표가 그라데이션 컬러로 바뀌며 튀어나옴 */
         .nav-btn:hover span:last-child {
+            opacity: 1;
+            color: var(--color-3);
             transform: translateX(6px);
         }
 
-        /* 모바일 대응 */
+        /* 모바일 최적화 */
         @media (max-width: 480px) {
+            .content {
+                padding: 35px 22px;
+                margin: 0 16px;
+            }
             .name {
-                font-size: 46px;
-                letter-spacing: 4px;
+                font-size: 56px;
             }
             .bio {
-                font-size: 14px;
-                margin-bottom: 42px;
+                font-size: 11px;
+                margin-bottom: 36px;
             }
             .nav-btn {
-                padding: 15px 22px;
-                font-size: 14.5px;
+                padding: 16px 22px;
+                font-size: 14px;
             }
         }
 
@@ -187,25 +237,26 @@
 </head>
 <body>
 
-    <!-- 🖼️ 자연스러운 크로스 디졸브를 위한 더블 레이어 구조 -->
+    <!-- 레이아웃 스펙 백그라운드 -->
     <div class="bg-layer bg-animate active" id="bg1"></div>
     <div class="bg-layer bg-animate" id="bg2"></div>
     <div class="bg-overlay"></div>
+    <div class="bg-glow"></div>
 
-    <!-- 콘텐츠 -->
+    <!-- 메인 프로필 카드 -->
     <div class="content">
-        <!-- 2. 중앙 메인 텍스트 변경 -->
         <h1 class="name">mang</h1>
-        <p class="bio">character illustrator &amp; designer</p>
+        <p class="bio">character illustrator</p>
 
+        <!-- 🔄 요청하신 5대 메뉴로 내용 싹 교체 완료 -->
         <div class="nav">
-            <!-- ⚠️ href="#" 자리에 실제 본인 SNS/커미션 링크를 채워넣으세요 -->
+            <!-- ⚠️ href="#" 자리에 본인의 실제 링크 주소를 붙여넣으세요! -->
             <a href="#" class="nav-btn" target="_blank">
-                <span>About</span>
+                <span>X (Twitter)</span>
                 <span>→</span>
             </a>
             <a href="#" class="nav-btn" target="_blank">
-                <span>Gallery</span>
+                <span>Pixiv</span>
                 <span>→</span>
             </a>
             <a href="#" class="nav-btn" target="_blank">
@@ -213,11 +264,11 @@
                 <span>→</span>
             </a>
             <a href="#" class="nav-btn" target="_blank">
-                <span>Blog</span>
-                <span>→</span>
+                <span>YouTube</span>
+                <span><span>→</span></span>
             </a>
             <a href="#" class="nav-btn" target="_blank">
-                <span>Contact</span>
+                <span>Instagram</span>
                 <span>→</span>
             </a>
         </div>
@@ -225,6 +276,7 @@
 
     <script>
         // ==================== 🎨 본인 일러스트 이미지 주소 설정 ====================
+        // 현재는 가상 샘플 이미지입니다. 작가님의 펑키하거나 어두운 고화질 일러스트 링크로 바꾸면 찰떡입니다.
         const images = [
             'https://picsum.photos',
             'https://picsum.photos',
@@ -237,13 +289,12 @@
         let currentIndex = 0;
         let isBg1Active = true;
 
-        // 초기 이미지 로드
         bg1.style.backgroundImage = `url('${images[0]}')`;
         if(images.length > 1) {
             bg2.style.backgroundImage = `url('${images[0]}')`;
         }
 
-        // 🔄 크로스 디졸브 슬라이드쇼 시스템
+        // 크로스 디졸브 슬라이드쇼 
         function startSlideshow() {
             if (images.length <= 1) return;
 
@@ -261,36 +312,12 @@
                 }
                 
                 isBg1Active = !isBg1Active;
-            }, 12000); // 12초마다 전환
+            }, 10000); // 10초 무빙 전환
         }
 
-        // 🖱️ 마우스 패럴랙스 무빙
+        // 패럴랙스 카메라 입체 무빙
         function initParallax() {
             let targetX = 0, targetY = 0;
             let currentX = 0, currentY = 0;
 
             document.addEventListener('mousemove', (e) => {
-                targetX = (e.clientX / window.innerWidth - 0.5) * 25;
-                targetY = (e.clientY / window.innerHeight - 0.5) * 25;
-            });
-
-            function animate() {
-                currentX += (targetX - currentX) * 0.05;
-                currentY += (targetY - currentY) * 0.05;
-                
-                bg1.style.transform = `translate(${currentX}px, ${currentY}px)`;
-                bg2.style.transform = `translate(${currentX}px, ${currentY}px)`;
-                
-                requestAnimationFrame(animate);
-            }
-            animate();
-        }
-
-        // 구동
-        window.addEventListener('DOMContentLoaded', () => {
-            startSlideshow();
-            initParallax();
-        });
-    </script>
-</body>
-</html>
