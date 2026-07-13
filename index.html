@@ -4,12 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>mang</title>
+    <link rel="icon" href="favicon.png">
+    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+    
     <style>
         :root {
             --accent: #ffffff;
+            --accent-neon: #00f0ff; /* 기하학 로더용 네온 블루 */
+            --accent-purple: #7f00ff; /* 기하학 로더용 네온 퍼플 */
         }
 
         * {
@@ -27,51 +32,219 @@
             align-items: center;
             justify-content: center;
             overflow: hidden;
+            position: relative;
         }
 
-        .bg-layer {
+        /* 🎬 [신규] 3초 기하학적 마름모 궤도 오프닝 스크린 */
+        .loading-screen {
             position: fixed;
             inset: 0;
+            background: #000000;
+            z-index: 999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            pointer-events: none;
+            animation: fadeOutScreen 0.4s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+            animation-delay: 2.6s; /* 정확히 3초대 컷 연출 */
+        }
+
+        .geo-loader {
+            position: relative;
+            width: 70px;
+            height: 70px;
+            transform: rotate(45deg);
+            animation: geoRotate 2.5s cubic-bezier(0.68, -0.6, 0.32, 1.6) infinite;
+        }
+
+        .geo-loader::before, .geo-loader::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border: 2px solid var(--accent-neon);
+            box-shadow: 0 0 15px var(--accent-neon);
+            animation: geoPulse 1.2s ease-in-out infinite alternate;
+        }
+
+        .geo-loader::after {
+            border-color: var(--accent-purple);
+            box-shadow: 0 0 15px var(--accent-purple);
+            transform: scale(0.55) rotate(45deg);
+            animation-delay: 0.6s;
+        }
+
+        @keyframes geoRotate {
+            0% { transform: rotate(45deg) scale(0.85); }
+            50% { transform: rotate(225deg) scale(1.15); }
+            100% { transform: rotate(405deg) scale(0.85); }
+        }
+
+        @keyframes geoPulse {
+            0% { opacity: 0.3; transform: scale(0.9); }
+            100% { opacity: 1; transform: scale(1.1); }
+        }
+
+        @keyframes fadeOutScreen {
+            to { opacity: 0; visibility: hidden; transform: scale(1.05); }
+        }
+
+        /* 🖼️ [버그수정] 페이드 디졸브 전환용 더블 레이어 배경 시스템 */
+        .bg-layer {
+            position: fixed;
+            top: -10%;
+            left: -10%;
+            width: 120%;
+            height: 120%;
             background-size: cover;
             background-position: center;
+            background-repeat: no-repeat;
             z-index: 1;
             opacity: 0;
-            transition: opacity 2.5s ease;
+            transition: opacity 2s ease-in-out;
+            will-change: transform, opacity;
         }
         .bg-layer.active { opacity: 1; }
 
+        /* 🪐 [신규] 배경 서서히 확대되며 움직이는 감성 무빙 효과 */
+        .bg-animate {
+            animation: kenBurns 45s ease-in-out infinite alternate;
+        }
+
+        @keyframes kenBurns {
+            0% { transform: scale(1.02) translate(0%, 0%); }
+            100% { transform: scale(1.12) translate(-2%, -1%); }
+        }
+
+        /* [신규] 뒷배경 이미지 톤을 묵직하게 가라앉히는 블랙 오버레이 */
+        .bg-overlay {
+            position: fixed;
+            inset: 0;
+            background: linear-gradient(
+                135deg,
+                rgba(5, 5, 5, 0.5) 0%,
+                rgba(8, 5, 12, 0.72) 50%,
+                rgba(5, 5, 5, 0.88) 100%
+            );
+            z-index: 3;
+            pointer-events: none;
+        }
+
+        /* 💜 [복구] 작가님이 요청하신 신비로운 보라색 네온 광채 스팟 */
+        .bg-glow {
+            position: fixed;
+            width: 750px;
+            height: 750px;
+            background: radial-gradient(circle, rgba(127, 0, 255, 0.12) 0%, rgba(0, 0, 0, 0) 65%);
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        /* 🎴 메인 콘텐츠 박스 */
         .content {
             position: relative;
             z-index: 10;
             width: 92%;
-            max-width: 620px;           /* 박스 더 크게 */
+            max-width: 620px;
             padding: 60px 55px;
-            border: 1.5px solid rgba(255,255,255,0.25);
-            border-radius: 8px;
-            background: rgba(5,5,5,0.65);
-            backdrop-filter: blur(20px);
+            border: 1.5px solid rgba(255,255,255,0.2);
+            border-radius: 12px;
+            background: rgba(5, 5, 7, 0.45); /* 유리 비침 효과를 위해 소폭 하향 조정 */
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            box-shadow: 0 40px 90px rgba(0, 0, 0, 0.8);
             opacity: 0;
-            transform: translateY(40px);
-            animation: contentEnter 1.8s cubic-bezier(0.23, 1, 0.32, 1) forwards;
-            animation-delay: 3.8s;
+            transform: translateY(30px);
+            /* ⏱️ [싱크수정] 오프닝 끝나는 타이밍(3초)에 맞춰 정밀 연동 */
+            animation: contentEnter 1.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            animation-delay: 2.7s; 
         }
 
         .name {
             font-family: 'Syne', sans-serif;
             font-size: 72px;
             font-weight: 800;
+            text-transform: uppercase;
             letter-spacing: -2px;
             margin-bottom: 8px;
+            background: linear-gradient(135deg, #ffffff 40%, #b0b0b0 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
+        /* [수정] 한 줄 요약 픽스 */
         .bio {
-            font-size: 15px;
-            color: #aaa;
+            font-size: 14px;
+            font-weight: 500;
+            color: #787880;
+            text-transform: uppercase;
             margin-bottom: 45px;
-            letter-spacing: 1px;
+            letter-spacing: 2px;
         }
 
-        /* ==================== 레퍼런스 스타일 네비게이션 ==================== */
+        /* ==================== 소셜 아이콘 부분 (수직 연결) ==================== */
+        .socials {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            margin: 0 0 45px 0;
+            position: relative;
+        }
+
+        .socials::before {
+            content: '';
+            position: absolute;
+            left: 11px;
+            top: 8px;
+            bottom: 8px;
+            width: 1px;
+            background: rgba(255,255,255,0.15);
+        }
+
+        .social-link {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            color: #aaa;
+            text-decoration: none;
+            font-size: 15px;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .social-link:hover {
+            color: #fff;
+            transform: translateX(6px);
+        }
+
+        /* 수직 라인과 교차되는 단추 앞 도트 인디케이터 장식 */
+        .social-link::before {
+            content: '';
+            width: 5px;
+            height: 5px;
+            background: #050505;
+            border: 1px solid rgba(255,255,255,0.4);
+            border-radius: 50%;
+            position: relative;
+            z-index: 2;
+            margin-left: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .social-link:hover::before {
+            background: #ffffff;
+            border-color: #ffffff;
+            box-shadow: 0 0 8px #fff;
+            transform: scale(1.3);
+        }
+
+        .social-link span {
+            font-weight: 500;
+            letter-spacing: 0.5px;
+        }
+
+        /* ==================== 네비게이션 가로 실선 링크 ==================== */
         .nav {
             display: flex;
             flex-direction: column;
@@ -83,18 +256,21 @@
             position: relative;
             display: flex;
             align-items: center;
-            padding: 14px 0;
-            color: #ddd;
+            padding: 16px 0;
+            color: #b5b5bd;
             text-decoration: none;
-            font-size: 15.5px;
-            transition: color 0.3s ease;
+            font-size: 15px;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         .nav-item:hover {
             color: #fff;
+            padding-left: 8px; /* 마우스 올리면 부드럽게 오른쪽 슬라이딩 */
         }
 
-        /* 얇은 연결선 (레퍼런스 스타일) */
+        /* 얇은 연결선 */
         .nav-item::after {
             content: '';
             position: absolute;
@@ -102,7 +278,12 @@
             bottom: 0;
             width: 100%;
             height: 1px;
-            background: rgba(255,255,255,0.25);
+            background: rgba(255,255,255,0.12);
+            transition: background 0.3s ease;
+        }
+
+        .nav-item:hover::after {
+            background: rgba(255,255,255,0.4);
         }
 
         .nav-item:last-child::after {
@@ -112,140 +293,35 @@
         .nav-item span {
             position: relative;
             z-index: 2;
-            background: #050505;
-            padding-right: 12px;
+            background: #09090b; /* 배경 흐림 질감과 어울리게 톤 보정 */
+            padding-right: 16px;
         }
 
-        /* 소셜 아이콘 부분 (수직 연결) */
-        .socials {
-            display: flex;
-            flex-direction: column;
-            gap: 18px;
-            margin: 35px 0 50px;
-            position: relative;
-        }
-
-        .socials::before {
-            content: '';
-            position: absolute;
-            left: 18px;
-            top: 8px;
-            bottom: 8px;
-            width: 1px;
-            background: rgba(255,255,255,0.25);
-        }
-
-        .social-link {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            color: #ddd;
-            text-decoration: none;
-            font-size: 15px;
-            transition: all 0.3s ease;
-        }
-
-        .social-link:hover {
-            color: #fff;
-            transform: translateX(4px);
-        }
-
-        .social-link span {
-            width: 22px;
-            text-align: center;
-        }
-
-        /* ==================== 애니메이션 ==================== */
+        /* ==================== 애니메이션 타임라인 바인딩 ==================== */
         @keyframes contentEnter {
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .nav-item {
             opacity: 0;
-            transform: translateY(20px);
-            animation: navItemEnter 1s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+            transform: translateY(15px);
+            animation: navItemEnter 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
-
-        .nav-item:nth-child(1) { animation-delay: 4.3s; }
-        .nav-item:nth-child(2) { animation-delay: 4.5s; }
-        .nav-item:nth-child(3) { animation-delay: 4.7s; }
-        .nav-item:nth-child(4) { animation-delay: 4.9s; }
-        .nav-item:nth-child(5) { animation-delay: 5.1s; }
+        /* 오프닝 연출 3초 이후 순차적으로 불 켜지는 스태거 딜레이 */
+        .nav-item:nth-child(1) { animation-delay: 3.1s; }
+        .nav-item:nth-child(2) { animation-delay: 3.25s; }
+        .nav-item:nth-child(3) { animation-delay: 3.4s; }
+        .nav-item:nth-child(4) { animation-delay: 3.55s; }
+        .nav-item:nth-child(5) { animation-delay: 3.7s; }
 
         .social-link {
             opacity: 0;
             transform: translateX(-15px);
-            animation: socialEnter 0.9s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+            animation: socialEnter 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
+        .social-link:nth-child(1) { animation-delay: 3.2s; }
+        .social-link:nth-child(2) { animation-delay: 3.3s; }
+        .social-link:nth-child(3) { animation-delay: 3.4s; }
+        .social-link:nth-child(4) { animation-delay: 3.5s; }
+        .social-link:nth-child(5) { animation-delay: 3.6s; }
 
-        .social-link:nth-child(1) { animation-delay: 4.4s; }
-        .social-link:nth-child(2) { animation-delay: 4.55s; }
-        .social-link:nth-child(3) { animation-delay: 4.7s; }
-        .social-link:nth-child(4) { animation-delay: 4.85s; }
-        .social-link:nth-child(5) { animation-delay: 5.0s; }
-
-        @keyframes navItemEnter {
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        @keyframes socialEnter {
-            to { opacity: 1; transform: translateX(0); }
-        }
-    </style>
-</head>
-<body>
-
-    <!-- 배경 -->
-    <div class="bg-layer active" id="bg1" style="background-image: url('https://picsum.photos/id/1015/2000/1200');"></div>
-
-    <!-- 메인 콘텐츠 -->
-    <div class="content">
-        <h1 class="name">mang</h1>
-        <p class="bio">character illustrator</p>
-
-        <!-- 소셜 (레퍼런스처럼 수직 선 연결) -->
-        <div class="socials">
-            <a href="https://x.com/KRIMP1723322" class="social-link" target="_blank">
-                <span>X</span>
-            </a>
-            <a href="#" class="social-link" target="_blank">
-                <span>Pixiv</span>
-            </a>
-            <a href="#" class="social-link" target="_blank">
-                <span>Instagram</span>
-            </a>
-            <a href="#" class="social-link" target="_blank">
-                <span>Discord</span>
-            </a>
-            <a href="#" class="social-link" target="_blank">
-                <span>Email</span>
-            </a>
-        </div>
-
-        <!-- 메뉴 (레퍼런스처럼 선으로 연결) -->
-        <div class="nav">
-            <a href="#" class="nav-item"><span>know about me</span></a>
-            <a href="#" class="nav-item"><span>commissions</span></a>
-            <a href="#" class="nav-item"><span>humble blog</span></a>
-            <a href="#" class="nav-item"><span>art gallery</span></a>
-            <a href="#" class="nav-item"><span>neat stuff</span></a>
-        </div>
-    </div>
-
-    <script>
-        // 배경 슬라이드쇼 (부드럽게)
-        const bg1 = document.getElementById('bg1');
-        setInterval(() => {
-            bg1.style.transition = 'opacity 2.5s ease';
-            bg1.style.opacity = '0';
-            setTimeout(() => {
-                bg1.style.backgroundImage = `url('https://picsum.photos/id/${Math.floor(Math.random()*20)+1005}/2000/1200')`;
-                bg1.style.opacity = '1';
-            }, 2500);
-        }, 12000);
-    </script>
-</body>
-</html>
