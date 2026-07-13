@@ -6,18 +6,17 @@
     <title>mang</title>
     <link rel="icon" href="favicon.png">
     
-    <!-- 폰트 업그레이드: 세련된 영문 폰트(Syne)와 도트 폰트(DotGothic16) 동시 로드 -->
     <link rel="preconnect" href="https://googleapis.com">
     <link rel="preconnect" href="https://gstatic.com" crossorigin>
-    <link href="https://googleapis.com/css2?family=DotGothic16&family=Syne:wght@700;800&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://googleapis.com/css2=family=DotGothic16&family=Syne:wght@700;800&family=Inter:wght@400;500&display=swap" rel="stylesheet">
     
     <style>
         :root {
             --bg-deep: #050505;
-            /* 사이버펑크/디지털 일러스트 감성의 포인트 그라데이션 색상 */
             --color-1: #ff007f;
             --color-2: #7f00ff;
             --color-3: #00f0ff;
+            --accent-glow: rgba(255, 255, 255, 0.15);
         }
 
         * {
@@ -38,7 +37,7 @@
             overflow: hidden;
         }
 
-        /* 🖼️ 배경 슬라이드쇼 레이어 (더블 버퍼링) */
+        /* 배경 슬라이드쇼 레이어 */
         .bg-layer {
             position: fixed;
             top: -10%;
@@ -58,7 +57,6 @@
             opacity: 1;
         }
 
-        /* 🪐 켄번즈 애니메이션 고도화 */
         .bg-animate {
             animation: kenBurns 40s ease-in-out infinite alternate;
         }
@@ -68,7 +66,6 @@
             100% { transform: scale(1.12) translate(-2%, -1%) rotate(0.5deg); }
         }
 
-        /* 더 트렌디하고 딥한 네온 오버레이 그라데이션 */
         .bg-overlay {
             position: fixed;
             inset: 0;
@@ -76,13 +73,12 @@
                 135deg,
                 rgba(5, 5, 5, 0.5) 0%,
                 rgba(10, 5, 15, 0.7) 50%,
-                rgba(5, 5, 5, 0.9) 100
+                rgba(5, 5, 5, 0.9) 100%
             );
             z-index: 3;
             pointer-events: none;
         }
 
-        /* 💡 몽환적인 배경 네온 광채 스팟 추가 */
         .bg-glow {
             position: fixed;
             width: 600px;
@@ -95,13 +91,13 @@
             pointer-events: none;
         }
 
-        /* 메인 콘텐츠 카드 */
+        /* 🎴 [수정] 메인 콘텐츠 카드 박스 크기 확대 */
         .content {
             position: relative;
             z-index: 10;
-            width: 100%;
-            max-width: 440px;
-            padding: 40px 28px;
+            width: 92%;
+            max-width: 540px; /* 기존 440px에서 540px로 묵직하게 키웠습니다 */
+            padding: 46px 36px; /* 내부 여백도 더 넓혀서 시원한 느낌을 줍니다 */
             text-align: center;
             background: rgba(255, 255, 255, 0.01);
             border: 1px solid rgba(255, 255, 255, 0.04);
@@ -115,15 +111,14 @@
             animation-delay: 0.2s;
         }
 
-        /* 🔥 타이포그래피 예술처럼 바꾼 폰트 디자인 (Syne 폰트) */
         .name {
             font-family: 'Syne', sans-serif;
             font-weight: 800;
-            font-size: 68px; 
+            font-size: 76px; /* 박스가 커진 만큼 폰트 크기도 68px -> 76px로 확대 */
             text-transform: uppercase;
             letter-spacing: -1px;
             line-height: 1;
-            margin-bottom: 14px;
+            margin-bottom: 16px;
             background: linear-gradient(135deg, #ffffff 30%, #a8a8a8 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
@@ -135,38 +130,36 @@
             font-size: 13px;
             font-weight: 500;
             color: #888888;
-            margin-bottom: 44px;
+            margin-bottom: 48px;
             text-transform: uppercase;
             letter-spacing: 2px;
         }
 
-        /* 버튼 그룹 */
         .nav {
             display: flex;
             flex-direction: column;
             gap: 14px;
         }
 
-        /* ✨ 상위호환 그라데이션 보더 버튼 디자인 */
+        /* 🔗 [수정] 박스 크기에 맞춰 터치하기 좋게 버튼 여백 및 크기 확대 */
         .nav-btn {
             position: relative;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 18px 28px;
+            padding: 20px 32px; /* 상하좌우 패딩을 늘려 버튼을 더 큼직하게 만들었습니다 */
             background: rgba(255, 255, 255, 0.03);
             border: 1px solid rgba(255, 255, 255, 0.06);
-            border-radius: 14px; /* 라운드를 살짝 줄여 더 세련되게 변경 */
+            border-radius: 14px;
             color: #e5e5e5;
             text-decoration: none;
-            font-size: 15px;
+            font-size: 16px; /* 버튼 글씨 크기도 15px -> 16px로 업 */
             font-weight: 500;
             letter-spacing: 0.5px;
             overflow: hidden;
             transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        /* 버튼 내부에 흐르는 컬러 그라데이션 선 연출 */
         .nav-btn::before {
             content: '';
             position: absolute;
@@ -177,7 +170,6 @@
             transition: opacity 0.4s ease;
         }
 
-        /* 💡 마우스 오버(Hover) 시 상위호환 네온 발광 연출 */
         .nav-btn:hover {
             color: #ffffff;
             border-color: transparent;
@@ -186,14 +178,13 @@
         }
 
         .nav-btn:hover::before {
-            opacity: 0.15; /* 마우스 올리면 버튼 내부에 은은한 그라데이션 불빛 활성화 */
+            opacity: 0.15;
         }
 
         .nav-btn:active {
             transform: translateY(-1px) scale(0.99);
         }
 
-        /* 화살표 아이콘 디자인 */
         .nav-btn span:last-child {
             font-family: 'Inter', sans-serif;
             font-size: 16px;
@@ -201,29 +192,27 @@
             transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        /* 마우스 오버 시 화살표가 그라데이션 컬러로 바뀌며 튀어나옴 */
         .nav-btn:hover span:last-child {
             opacity: 1;
             color: var(--color-3);
             transform: translateX(6px);
         }
 
-        /* 모바일 최적화 */
         @media (max-width: 480px) {
             .content {
-                padding: 35px 22px;
+                padding: 38px 24px;
                 margin: 0 16px;
             }
             .name {
-                font-size: 56px;
+                font-size: 58px;
             }
             .bio {
                 font-size: 11px;
                 margin-bottom: 36px;
             }
             .nav-btn {
-                padding: 16px 22px;
-                font-size: 14px;
+                padding: 18px 24px;
+                font-size: 15px;
             }
         }
 
@@ -237,24 +226,23 @@
 </head>
 <body>
 
-    <!-- 레이아웃 스펙 백그라운드 -->
     <div class="bg-layer bg-animate active" id="bg1"></div>
     <div class="bg-layer bg-animate" id="bg2"></div>
     <div class="bg-overlay"></div>
     <div class="bg-glow"></div>
 
-    <!-- 메인 프로필 카드 -->
     <div class="content">
         <h1 class="name">mang</h1>
         <p class="bio">character illustrator</p>
 
-        <!-- 🔄 요청하신 5대 메뉴로 내용 싹 교체 완료 -->
         <div class="nav">
-            <!-- ⚠️ href="#" 자리에 본인의 실제 링크 주소를 붙여넣으세요! -->
-            <a href="#" class="nav-btn" target="_blank">
+            <!-- 🔗 [수정] X (Twitter) 부분에 실제 트위터 연결용 테스트 링크 주소를 심었습니다! -->
+            <a href="https://x.com/KRIMP1723322" class="nav-btn" target="_blank">
                 <span>X (Twitter)</span>
                 <span>→</span>
             </a>
+            
+            <!-- 아래 남은 채널들은 나중에 주소가 나오면 # 자리에 주소를 쏙 채우시면 됩니다 -->
             <a href="#" class="nav-btn" target="_blank">
                 <span>Pixiv</span>
                 <span>→</span>
@@ -265,7 +253,7 @@
             </a>
             <a href="#" class="nav-btn" target="_blank">
                 <span>YouTube</span>
-                <span><span>→</span></span>
+                <span>→</span>
             </a>
             <a href="#" class="nav-btn" target="_blank">
                 <span>Instagram</span>
@@ -275,8 +263,6 @@
     </div>
 
     <script>
-        // ==================== 🎨 본인 일러스트 이미지 주소 설정 ====================
-        // 현재는 가상 샘플 이미지입니다. 작가님의 펑키하거나 어두운 고화질 일러스트 링크로 바꾸면 찰떡입니다.
         const images = [
             'https://picsum.photos',
             'https://picsum.photos',
@@ -294,7 +280,6 @@
             bg2.style.backgroundImage = `url('${images[0]}')`;
         }
 
-        // 크로스 디졸브 슬라이드쇼 
         function startSlideshow() {
             if (images.length <= 1) return;
 
@@ -312,12 +297,22 @@
                 }
                 
                 isBg1Active = !isBg1Active;
-            }, 10000); // 10초 무빙 전환
+            }, 10000);
         }
 
-        // 패럴랙스 카메라 입체 무빙
         function initParallax() {
             let targetX = 0, targetY = 0;
             let currentX = 0, currentY = 0;
 
             document.addEventListener('mousemove', (e) => {
+                targetX = (e.clientX / window.innerWidth - 0.5) * 30;
+                targetY = (e.clientY / window.innerHeight - 0.5) * 30;
+            });
+
+            function animate() {
+                currentX += (targetX - currentX) * 0.04;
+                currentY += (targetY - currentY) * 0.04;
+                
+                bg1.style.transform = `translate(${currentX}px, ${currentY}px)`;
+                bg2.style.transform = `translate(${currentX}px, ${currentY}px)`;
+                
